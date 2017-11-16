@@ -287,20 +287,32 @@ namespace roundhouse.runners
             {
                 string sql_file_text = replace_tokens(get_file_text(sql_file));
                 Log.bound_to(this).log_a_debug_event_containing(" Found and running {0}.", sql_file);
-                bool the_sql_ran = database_migrator.run_sql(sql_file_text, file_system.get_file_name_from(sql_file),
-                                                             migration_folder.should_run_items_in_folder_once,
-                                                             migration_folder.should_run_items_in_folder_every_time,
-                                                             version_id, migrating_environment_set, repository_version, repository_path, connection_type);
-                if (the_sql_ran)
+                try
                 {
-                    try
+                    bool the_sql_ran = database_migrator.run_sql(sql_file_text, file_system.get_file_name_from(sql_file),
+                                                                 migration_folder.should_run_items_in_folder_once,
+                                                                 migration_folder.should_run_items_in_folder_every_time,
+                                                                 version_id, migrating_environment_set, repository_version, repository_path, connection_type);
+                    if (the_sql_ran)
                     {
-                        copy_to_change_drop_folder(sql_file, migration_folder);
+                        try
+                        {
+                            copy_to_change_drop_folder(sql_file, migration_folder);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.bound_to(this).log_a_warning_event_containing("Unable to copy {0} to {1}. {2}{3}", sql_file, migration_folder.folder_full_path,
+                                                                              System.Environment.NewLine, ex.to_string());
+                        }
                     }
-                    catch (Exception ex)
+                }
+                catch (Exception ex)
+                {
+                    Log.bound_to(this).log_an_error_event_containing(" Error running {0}. Exception: {1}", sql_file, ex);
+
+                    if (!configuration.ContinueOnError)
                     {
-                        Log.bound_to(this).log_a_warning_event_containing("Unable to copy {0} to {1}. {2}{3}", sql_file, migration_folder.folder_full_path,
-                                                                          System.Environment.NewLine, ex.to_string());
+                        throw;
                     }
                 }
             }

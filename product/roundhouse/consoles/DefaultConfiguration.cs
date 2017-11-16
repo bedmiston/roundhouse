@@ -83,5 +83,7 @@ namespace roundhouse.consoles
         public bool Initialize { get; set; }
         public string ConfigurationFile { get; set; }
         public System.Text.Encoding DefaultEncoding { get; set; }
-	}
+
+        public bool ContinueOnError { get; set; }
+    }
 }

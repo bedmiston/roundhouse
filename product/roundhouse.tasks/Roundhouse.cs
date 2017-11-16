@@ -205,6 +205,8 @@ namespace roundhouse.tasks
         public bool Initialize { get; set; }
         public string ConfigurationFile { get; set; }
 
+        public bool ContinueOnError { get; set; }
+
         #endregion
 
         public void run_the_task()

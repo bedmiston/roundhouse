@@ -372,6 +372,9 @@ namespace roundhouse.console
                 .Add("cf=|configfile=|configurationfile=",
                     "Loads configuration options from a JSON file",
                     option => configuration.ConfigurationFile = option)
+                .Add("continueonerror",
+                     "ContinueOnError - This instructs RH to continue in the case of an error running a script.",
+                     option => configuration.ContinueOnError = option != null)
                 ;
 
             try
